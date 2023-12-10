@@ -1,12 +1,7 @@
-# These are the only packages you are allowed import:
 import os
 import glob
 import math
 import matplotlib.pyplot as plt
-
-# "pass" indicates an empty block of code,
-# remove it when filling in the functions.
-
 
 def my_name() -> str:
     return "Rachel Bozadjian"
@@ -101,23 +96,38 @@ def center_list(x: list[float]) -> list[float]:
 
 
 def correlation(x: list[float], y: list[float]) -> float:
-    # numerator: sum of x and y
-    xy = [x * y for x, y in zip(x, y)]
-    xy_sum = sum(xy)
+    # only run if absorbance lists are the same length
+    if len(x) == len(y):
+        # numerator: sum of x and y
+        xy = [x * y for x, y in zip(x, y)]
+        xy_sum = sum(xy)
+        
+        # denominator: sum of x squared
+        x_sq = [element**2 for element in x]
+        sum_x_sq = sum(x_sq)
+        
+        # denominator: sum of y squared
+        y_sq = [element**2 for element in y]
+        sum_y_sq = sum(y_sq)
+        
+        # pearson correlation coefficient
+        corr = xy_sum / math.sqrt(sum_x_sq * sum_y_sq)
     
-    # denominator: sum of x squared
-    x_sq = [element**2 for element in x]
-    sum_x_sq = sum(x_sq)
-    
-    # denominator: sum of y squared
-    y_sq = [element**2 for element in y]
-    sum_y_sq = sum(y_sq)
-    
-    # pearson correlation coefficient
-    corr = xy_sum / math.sqrt(sum_x_sq * sum_y_sq)
-    
-    return corr
+        return round(corr, 4)
 
+
+def make_correlation_table(corr_list: list[float], file_name_list: list[str]) -> None:
+    # remove '.dat' from file name strings
+    file_names_formatted = [name.replace(".dat", "") for name in file_name_list]
+    
+    # combine into dictionary with corr_list
+    corr_dict = {file_name: corr for file_name, corr in zip(file_names_formatted, corr_list)}
+
+    print("SAMPLE_NAME " + "      CORRELATION_COEFFICIENT")
+    for key, value in corr_dict.items():
+        print(f"{key}: {value}")
+    
+    return
 
 if __name__ == "__main__":
     # print name
@@ -129,10 +139,9 @@ if __name__ == "__main__":
     file_path = os.chdir(directory_path)
 
     # file name list
-    #spec_file_name_list = glob.glob('*')
-
+    spec_file_name_list = sorted(glob.glob('*'))
     # file path list
-    spec_file_path_list = glob.glob(os.path.join(directory_path, '*'))
+    spec_file_path_list = sorted(glob.glob(os.path.join(directory_path, '*')))
     
     # pure spectrum, absorbance, and centered data   
     pure_spectrum = parse_spectrum(spec_file_path_list[0])
@@ -140,28 +149,19 @@ if __name__ == "__main__":
     pure_spectrum_centered = center_list(pure_spectrum_abs)
     
     # plot the transmittance of the pure antibiotic infrared spectrum
-    # plot_transmittance(pure_spectrum)
+    plot_transmittance(pure_spectrum)
 
-    # test case with one spectrum
-    spectrum = parse_spectrum(spec_file_path_list[91])
-    cat = remove_invalid_transmittance(spectrum)
-    print(spectrum)
-    print(cat)
-    # spectrum_abs = absorbance_list(spectrum)
-    # spectrum_centered = center_list(spectrum_abs)
+    # meeeeep
+    corrs = []
     
-    
-    # print(len(spectrum_centered))
-    # print(len(pure_spectrum_centered))
-    
-    # for i in spec_file_path_list[1:]:
-    #     spectrum = parse_spectrum(i)
-        # spectrum_abs = absorbance_list(spectrum)
-        # spectrum_centered = center_list(spectrum_abs)
-        # corrs = correlation(spectrum_centered, pure_spectrum_centered)
+    for i in spec_file_path_list[1:]:
+        spectrum = parse_spectrum(i)
+        spectrum_outliers_removed = remove_invalid_transmittance(spectrum)
+        spectrum_abs = absorbance_list(spectrum_outliers_removed)
+        spectrum_centered = center_list(spectrum_abs)
+        corrs.append(correlation(spectrum_centered, pure_spectrum_centered))
         
-    
+    make_correlation_table(corrs, spec_file_name_list[1:])
+        
 # change file path
 # add docstrings
-# remove spectrum_abs with out_of_range values
-# make a 'table' of the correlations with their associated sample name
