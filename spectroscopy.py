@@ -131,7 +131,7 @@ def make_correlation_table(corr_list: list[float], file_name_list: list[str]) ->
 
 if __name__ == "__main__":
     # print name
-    # print(my_name())
+    print(my_name())
     
     # change directory to access .dat files
     # MIGHT NEED TO CHANGE THIS TO JUST DESKTOP
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     # plot the transmittance of the pure antibiotic infrared spectrum
     plot_transmittance(pure_spectrum)
 
-    # meeeeep
+    # sample spectra, absorbance, centered data, and correlations
     corrs = []
     
     for i in spec_file_path_list[1:]:
@@ -161,7 +161,9 @@ if __name__ == "__main__":
         spectrum_centered = center_list(spectrum_abs)
         corrs.append(correlation(spectrum_centered, pure_spectrum_centered))
         
+    # make a table with the sample names and their corresponding correlation coefficients
     make_correlation_table(corrs, spec_file_name_list[1:])
         
-# change file path
+# change file path for .dat files
+# change file path for pure antibiotic plot
 # add docstrings
