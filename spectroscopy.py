@@ -90,9 +90,11 @@ def plot_transmittance(spectrum: list[float]) -> None:
     # plot x and y limits
     plt.xlim(4100,350)
     plt.ylim(10,110)
-    
+        
     # save figure locally
-    plt.savefig("/Users/rachelbozadjian/Desktop/intro_bioinformatics/assignment2/assignmentFiles/pure_antibiotic_infrared_spectrum.png", dpi = 200)
+    plt.savefig("../pure_antibiotic_infrared_spectrum.png", dpi = 200)
+    
+    plt.close()
     
     return average_spectrum
 
@@ -209,10 +211,42 @@ def plot_all_samples(pure_spectrum: list[float], spec_file_name_list: list[str],
     plt.ylim(10,110)
     
     plt.legend(handles=custom_legend)
-    plt.savefig(f"/Users/rachelbozadjian/Desktop/intro_bioinformatics/assignment2/assignmentFiles/{strain_name}.png", dpi=200)
+    plt.savefig(f"../{strain_name}.png", dpi=200)
+    plt.close()
     
     return
 
+
+def plot_transmittance_strainF_sample10(spectrum: list[float]) -> None:
+    '''function that plots the transmittance spectrum 
+    of a sample according against known wavenumbers.'''
+    # list of infrared wavenumbers
+    wavenumber = list(range(400, 4024, 24))
+    
+    # average every 6 measurements per wavenumber and save to new list
+    average_spectrum = [sum(spectrum[i:i+6]) / 6 for i in range(0, len(spectrum), 6)]
+
+    # plot average_spectrum ~ wavenumber
+    plt.plot(wavenumber, average_spectrum)
+    
+    # invert x-axis (wavenumber)
+    plt.gca().invert_xaxis()
+    
+    # plot labels and title
+    plt.xlabel("Wavenumber (cm-1)")
+    plt.ylabel("Transmittance")
+    plt.title("strainF_sample10 Infrared Spectrum")
+    
+    # plot x and y limits
+    plt.xlim(4100,350)
+    plt.ylim(10,110)
+        
+    # save figure locally
+    plt.savefig("../strainF_sample10.png", dpi = 200)
+    
+    plt.close()
+    
+    return
 
 if __name__ == "__main__":
     # print name
@@ -220,8 +254,8 @@ if __name__ == "__main__":
     
     # change directory to access .dat files
     home_directory = os.path.expanduser("~")
-    relative_path = "Desktop/assignmentFiles/data"
-    DIRECTORY_PATH = os.path.join(home_directory, relative_path)
+    RELATIVE_PATH = "Desktop/assignmentFiles/data"
+    DIRECTORY_PATH = os.path.join(home_directory, RELATIVE_PATH)
     file_path = os.chdir(DIRECTORY_PATH)
 
     # file name list
@@ -235,7 +269,7 @@ if __name__ == "__main__":
     pure_spectrum_abs = absorbance_list(pure_spectrum)
     pure_spectrum_centered = center_list(pure_spectrum_abs)
     
-    # plot the transmittance of the pure antibiotic infrared spectrum and save transmittance averages
+    # plot the transmittance of the pure antibiotic infrared spectrum and save pure transmittance averages
     pure_spectrum_averages = plot_transmittance(pure_spectrum)
 
     # sample spectra, absorbance, centered data, and correlations
@@ -258,11 +292,13 @@ if __name__ == "__main__":
     
     # make table with sample names and corresponding mean corr coeffs and standard dev
     make_correlation_table(corr_mean_stddev, "MEAN_CORRELATION_COEFFICIENT, STANDARD_DEVIATION")
+    
+    # plot for strainF_sample10
+    strainF_sample10 = spec_file_name_list.index("strainF_sample10.dat")
+    strainF_sample10_spectrum = parse_spectrum(spec_file_path_list[strainF_sample10])
+    plot_transmittance_strainF_sample10(strainF_sample10_spectrum)
 
     # plot all samples for strains B, C, and F and antibiotic
     plot_all_samples(pure_spectrum_averages, spec_file_name_list, spec_file_path_list, "strainB")
     plot_all_samples(pure_spectrum_averages, spec_file_name_list, spec_file_path_list, "strainC")
     plot_all_samples(pure_spectrum_averages, spec_file_name_list, spec_file_path_list, "strainF")
-
-# change file path for .dat files
-# change file path for pure antibiotic plot
