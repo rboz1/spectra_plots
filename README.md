@@ -14,7 +14,7 @@
   <h3 align="center">Spectra Plots Script</h3>
 
   <p align="center">
-    A python script that analyze the infrared spectra of antibiotic produced by 16 yeast strains.
+    A python script that analyzes the infrared spectra of antibiotic produced by 16 yeast strains.
   </p>
 </div>
 
